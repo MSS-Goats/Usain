@@ -14,7 +14,6 @@ def draw_landmarks_on_image(rgb_image, detection_result):
   for idx in range(len(pose_landmarks_list)):
     pose_landmarks = pose_landmarks_list[idx]
 
-    # Draw the pose landmarks.
     pose_landmarks_proto = landmark_pb2.NormalizedLandmarkList()
     pose_landmarks_proto.landmark.extend([
       landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in pose_landmarks

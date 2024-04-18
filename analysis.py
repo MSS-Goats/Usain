@@ -33,8 +33,7 @@ def calculate(p1, p2):
     return math.degrees(math.atan2(p2[1] - p1[1], p2[0] - p1[0]))
 
 
-def get_angles(image):
-    angles = []
+def get_coords(image):
     coords = []
     detection_result = detector.detect(image)
     pose_landmarks_list = detection_result.pose_landmarks
@@ -46,17 +45,25 @@ def get_angles(image):
             y_px = min(math.floor(landmark.y * image_height), image_height - 1)
             coords.append((x_px, y_px))
             # print((x_px, y_px))
+    return coords
+
+
+def get_angles(arr):
+    angles = []
     for edge in POSE_CONNECTIONS:
         u = edge[0]
         v = edge[1]
-        angles.append(round(calculate(coords[u], coords[v]), 1))
-        print(coords[u], coords[v], calculate(coords[u], coords[v]))
+        angles.append(round(calculate(arr[u], arr[v])))
+        print(arr[u], arr[v], calculate(arr[u], arr[v]))
     return angles
+
 
 image1 = mp.Image.create_from_file(os.getcwd() + "/bolt_raw/0.jpg")
 image2 = mp.Image.create_from_file(os.getcwd() + "/bolt_raw/241.jpg")
-a1 = get_angles(image1)
-a2 = get_angles(image2)
+coords1 = get_coords(image1)
+coords2 = get_coords(image2)
+a1 = get_angles(coords1)
+a2 = get_angles(coords2)
 arr = np.array([a1, a2])
 df = pd.DataFrame(arr)
 # fig, ax = plt.subplots()
