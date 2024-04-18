@@ -7,6 +7,8 @@ from mediapipe.framework.formats import landmark_pb2
 import numpy as np
 import math
 import os
+import pandas as pd
+import matplotlib.pyplot as plt
 
 base_options = python.BaseOptions(
     model_asset_path='pose_landmarker_heavy.task')
@@ -27,26 +29,55 @@ POSE_CONNECTIONS = frozenset([(0, 1), (1, 2), (2, 3), (3, 7), (0, 4), (4, 5),
                               (29, 31), (30, 32), (27, 31), (28, 32)])
 
 
-def angle(p1, p2):
+def calculate(p1, p2):
     return math.degrees(math.atan2(p2[1] - p1[1], p2[0] - p1[0]))
 
 
-image = mp.Image.create_from_file(os.getcwd() + "/bolt_raw/241.jpg")
-coords = []
-detection_result = detector.detect(image)
-pose_landmarks_list = detection_result.pose_landmarks
-for idx in range(len(pose_landmarks_list)):
-    pose_landmarks = pose_landmarks_list[idx]
-    for landmark in pose_landmarks:
-        # print((landmark.x, landmark.y))
-        x_px = min(math.floor(landmark.x * image_width), image_width - 1)
-        y_px = min(math.floor(landmark.y * image_height), image_height - 1)
-        coords.append((x_px, y_px))
-        # print((x_px, y_px))
-for edge in POSE_CONNECTIONS:
-    u = edge[0]
-    v = edge[1]
-    print(coords[u], coords[v], angle(coords[u], coords[v]))
+def get_angles(image):
+    angles = []
+    coords = []
+    detection_result = detector.detect(image)
+    pose_landmarks_list = detection_result.pose_landmarks
+    for idx in range(len(pose_landmarks_list)):
+        pose_landmarks = pose_landmarks_list[idx]
+        for landmark in pose_landmarks:
+            # print((landmark.x, landmark.y))
+            x_px = min(math.floor(landmark.x * image_width), image_width - 1)
+            y_px = min(math.floor(landmark.y * image_height), image_height - 1)
+            coords.append((x_px, y_px))
+            # print((x_px, y_px))
+    for edge in POSE_CONNECTIONS:
+        u = edge[0]
+        v = edge[1]
+        angles.append(round(calculate(coords[u], coords[v]), 1))
+        print(coords[u], coords[v], calculate(coords[u], coords[v]))
+    return angles
+
+image1 = mp.Image.create_from_file(os.getcwd() + "/bolt_raw/0.jpg")
+image2 = mp.Image.create_from_file(os.getcwd() + "/bolt_raw/241.jpg")
+a1 = get_angles(image1)
+a2 = get_angles(image2)
+arr = np.array([a1, a2])
+df = pd.DataFrame(arr)
+# fig, ax = plt.subplots()
+# ax.axis('off')
+# ax.axis('tight')
+# table = ax.table(cellText=df.values, colLabels=df.columns, loc='center')
+# fig.tight_layout()
+# plt.show()
+
+fig, ax = plt.subplots()
+table = ax.table(cellText=[a1, a2], loc='center')
+
+# Hide axes
+ax.axis('off')
+
+# Adjust layout
+table.auto_set_font_size(False)
+table.set_fontsize(8)
+table.scale(1.2, 1.2)  # Adjust scaling as needed
+
+plt.show()
 
 # image.save(os.getcwd() + "/bolt_processed/own_drawing_" + filename)
 

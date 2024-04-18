@@ -1,4 +1,3 @@
-# STEP 1: Import the necessary modules.
 from PIL import Image, ImageDraw
 import mediapipe as mp
 from mediapipe.tasks import python
@@ -12,7 +11,6 @@ def draw_landmarks_on_image(rgb_image, detection_result):
   pose_landmarks_list = detection_result.pose_landmarks
   annotated_image = np.copy(rgb_image)
 
-  # Loop through the detected poses to visualize.
   for idx in range(len(pose_landmarks_list)):
     pose_landmarks = pose_landmarks_list[idx]
 
@@ -28,7 +26,6 @@ def draw_landmarks_on_image(rgb_image, detection_result):
       solutions.drawing_styles.get_default_pose_landmarks_style())
   return annotated_image
 
-# STEP 2: Create an PoseLandmarker object.
 base_options = python.BaseOptions(
     model_asset_path='pose_landmarker_heavy.task')
 options = vision.PoseLandmarkerOptions(
@@ -37,8 +34,6 @@ options = vision.PoseLandmarkerOptions(
 detector = vision.PoseLandmarker.create_from_options(options)
 
 for filename in os.listdir(os.getcwd() + "\\bolt_raw"):
-    
-    # STEP 3: Load the input image.
     image = mp.Image.create_from_file(os.getcwd() + "\\bolt_raw\\"+ filename)
     detection_result = detector.detect(image)
 
@@ -49,7 +44,6 @@ for filename in os.listdir(os.getcwd() + "\\bolt_raw"):
     width, height = 1000, 1060
     image = Image.new("RGB", (width, height), "white")
 
-    # Paste the NumPy array image onto the new image
-    image.paste(image_np, (0, 0))  # Example: paste at position (100, 100)
+    image.paste(image_np, (0, 0))
 
     image.save(os.getcwd() + "\\bolt_processed\\" + filename)
