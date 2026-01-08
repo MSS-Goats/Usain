@@ -1,2 +1,1 @@
-# Usain
- 
+Given a video of someone running, this project identifies their pose landmarks per frame using `ffmpeg` and `MediaPipe`. Then, each frame is analyzed for any discrepencies when compared to top runners, encompassing hip tilt, elbow angle, leg angle, cadence, etc. Functionally, this allows avid runners to self-coach themself, free from personal bias and more accurate to objective running data than their own running predispositions.
